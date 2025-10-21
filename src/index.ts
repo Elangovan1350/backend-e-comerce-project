@@ -33,12 +33,15 @@ app.post("/login", async (c) => {
     select: { password: true },
   });
   if (!passwordCheck) {
-    return c.json({ message: "invalid email or password" });
+    return c.json({ message: "invalid email or password", success: false });
   }
   const compare = bcrypt.compareSync(password, passwordCheck.password);
   if (!compare) {
-    return c.json({ message: "invalid email or password" });
+    return c.json({ message: "invalid email or password", success: compare });
   }
-  return c.json({ success: compare });
+  return c.json({
+    success: compare,
+    message: "email and password is correct",
+  });
 });
 export default app;
