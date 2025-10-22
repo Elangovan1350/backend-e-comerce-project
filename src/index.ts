@@ -7,12 +7,18 @@ const app = new Hono();
 const saltRounds = 10;
 
 app.get("/", (c) => {
-  return c.text("Hello Hono!");
+  return c.text("hello");
 });
 
 app.post("/register", async (c) => {
   try {
     const { name, email, password, phone } = await c.req.json();
+    const emailExistAlready = await prisma.users.findUnique({
+      where: { email },
+    });
+    if (emailExistAlready) {
+      return c.json({ message: "email already exist ", success: false });
+    }
 
     const hash = bcrypt.hashSync(password, saltRounds);
 
@@ -24,6 +30,8 @@ app.post("/register", async (c) => {
         phone,
       },
     });
+    console.log(newUser);
+
     return c.json(
       {
         data: newUser,
@@ -52,7 +60,7 @@ app.post("/login", async (c) => {
     });
     if (!passwordCheck) {
       return c.json(
-        { message: "invalid email or password", success: false },
+        { message: " email is not registered ", success: false },
         401
       );
     }
@@ -60,7 +68,7 @@ app.post("/login", async (c) => {
     if (!compare) {
       return c.json(
         {
-          message: "invalid email or password",
+          message: "invalid password",
           success: compare,
         },
         401
