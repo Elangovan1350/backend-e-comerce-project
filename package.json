@@ -4,7 +4,7 @@
     "dev": "bun run --hot src/index.ts"
   },
   "dependencies": {
-    "@prisma/client": "^6.17.1",
+    "@prisma/client": "^6.18.0",
     "bcryptjs": "^3.0.2",
     "hono": "^4.10.1",
     "prisma": "^6.17.1",
