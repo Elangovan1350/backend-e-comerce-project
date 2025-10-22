@@ -13,12 +13,6 @@ app.get("/", (c) => {
 app.post("/register", async (c) => {
   try {
     const { name, email, password, phone } = await c.req.json();
-    const emailExistAlready = await prisma.users.findUnique({
-      where: { email },
-    });
-    if (emailExistAlready) {
-      return c.json({ message: "email already exist ", success: false });
-    }
 
     const hash = bcrypt.hashSync(password, saltRounds);
 
@@ -30,7 +24,6 @@ app.post("/register", async (c) => {
         phone,
       },
     });
-    console.log(newUser);
 
     return c.json(
       {
@@ -41,9 +34,14 @@ app.post("/register", async (c) => {
       200
     );
   } catch (error) {
-    console.log(
-      error + " email,password,name,phone any one of this is missing"
-    );
+    const { email } = await c.req.json();
+
+    const emailExistAlready = await prisma.users.findUnique({
+      where: { email },
+    });
+    if (emailExistAlready) {
+      return c.json({ message: "email already exist ", success: false });
+    }
     return c.json(
       { message: "server error user cann't register ", success: false },
       501
