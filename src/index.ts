@@ -6,8 +6,12 @@ const prisma = new PrismaClient();
 const app = new Hono();
 const saltRounds = 10;
 
-app.get("/", (c) => {
-  return c.text("hello");
+app.get("/", async (c) => {
+  const users = await prisma.users.findMany();
+  return c.json(
+    { data: users, message: "all users fetched successfully", success: true },
+    200
+  );
 });
 
 app.post("/register", async (c) => {
@@ -59,7 +63,7 @@ app.post("/login", async (c) => {
     if (!passwordCheck) {
       return c.json(
         { message: " email is not registered ", success: false },
-        401
+        200
       );
     }
     const compare = bcrypt.compareSync(password, passwordCheck.password);
@@ -69,7 +73,7 @@ app.post("/login", async (c) => {
           message: "invalid password",
           success: compare,
         },
-        401
+        200
       );
     }
     return c.json(
