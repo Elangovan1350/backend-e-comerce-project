@@ -1,9 +1,12 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 const app = new Hono();
+
+app.use(cors({ origin: "*", credentials: true }));
 const saltRounds = 10;
 
 app.get("/", async (c) => {
