@@ -6,7 +6,13 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 const app = new Hono();
 
-app.use(cors({ origin: "*", credentials: true }));
+app.use(
+  "*",
+  cors({
+    origin: ["http://localhost:3000", "https://your-frontend.vercel.app"],
+    credentials: true,
+  })
+);
 const saltRounds = 10;
 
 app.get("/", async (c) => {
