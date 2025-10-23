@@ -9,7 +9,11 @@ const app = new Hono();
 app.use(
   "*",
   cors({
-    origin: ["http://localhost:3000", "https://your-frontend.vercel.app"],
+    origin: [
+      "http://localhost:3000",
+      "https://frontend-ecommerce-project.vercel.app",
+      "http://localhost:3001",
+    ],
     credentials: true,
   })
 );
