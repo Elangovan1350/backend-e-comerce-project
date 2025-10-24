@@ -193,6 +193,10 @@ app.post("/forgot-password", async (c) => {
       subject: "Password Reset",
       html: `<p>Click <a href="https://frontend-ecommerce-project.vercel.app/reset-password?token=${token}">here</a> to reset your password.</p>`,
     });
+    return c.json({
+      message: "password reset email sent successfully",
+      success: true,
+    });
   } catch (error) {
     console.log(error);
     return c.json({
