@@ -7,7 +7,7 @@ import { Resend } from "resend";
 const prisma = new PrismaClient();
 const app = new Hono();
 
-const resend = new Resend("re_dAsebQyw_7jMdibaYDxqqk3vG1FFJ66ud");
+const resend = new Resend(process.env.resend_email_api_key);
 
 // CORS configuration
 app.use(
