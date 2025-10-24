@@ -185,9 +185,14 @@ app.post("/forgot-password", async (c) => {
     // Here you would typically generate a password reset token and send it via email.
     const token = createToken(email);
     // Send email with token (implementation not shown)
-    return c.redirect(
-      `https://frontend-ecommerce-project.vercel.app/user/resetPassword?token=${token}`,
-      302
+    return c.json(
+      {
+        message: "password reset token generated successfully",
+        success: true,
+        token,
+        redirect_url: `https://frontend-ecommerce-project.vercel.app/user/resetPassword?token=${token}`,
+      },
+      200
     );
   } catch (error) {
     console.log(error);
