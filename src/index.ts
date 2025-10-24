@@ -7,7 +7,7 @@ import { Resend } from "resend";
 const prisma = new PrismaClient();
 const app = new Hono();
 
-const resend = new Resend(process.env.resend_email_api_key);
+const resend = new Resend(`${process.env.resend_email_api_key}`);
 
 // CORS configuration
 app.use(
@@ -165,7 +165,8 @@ app.post("/change-password", async (c) => {
 // function to create JWT token
 const createToken = (email: string) => {
   const JWT_SECRET =
-    "lkfdklf8u58925584512dsfew$#@%@df4ds65fefjewi651$#^sfds4f$%#$t";
+    process.env.jwt_secret_key ||
+    "cascascac32224#@$#3dewf#@R#@RFEfcc$##RFf33r32424R@#";
   const payload = { email };
   return jwt.sign(payload, JWT_SECRET, { expiresIn: "15m" });
 };
@@ -187,15 +188,22 @@ app.post("/forgot-password", async (c) => {
     // Here you would typically generate a password reset token and send it via email.
     const token = createToken(email);
     // Send email with token (implementation not shown)
-    resend.emails.send({
-      from: "elangov@example.com",
+    const emailResponse = await resend.emails.send({
+      from: "elangovan2019miss@gmail.com",
       to: email,
       subject: "Password Reset",
       html: `<p>Click <a href="https://frontend-ecommerce-project.vercel.app/reset-password?token=${token}">here</a> to reset your password.</p>`,
     });
+    if (emailResponse.data?.id) {
+      console.log("Password reset email sent successfully.");
+      return c.json({
+        message: "password reset email sent successfully",
+        success: true,
+      });
+    }
     return c.json({
-      message: "password reset email sent successfully",
-      success: true,
+      message: "failed to send password reset email",
+      success: false,
     });
   } catch (error) {
     console.log(error);
