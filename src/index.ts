@@ -190,7 +190,7 @@ app.post("/forgot-password", async (c) => {
         message: "password reset token generated successfully",
         success: true,
         token,
-        redirect_url: `https://frontend-ecommerce-project.vercel.app/user/resetPassword?token=${token}`,
+        redirect_url: `/user/resetPassword?token=${token}`,
       },
       200
     );
