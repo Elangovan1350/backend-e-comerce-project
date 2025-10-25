@@ -172,9 +172,7 @@ app.post("/change-password", async (c) => {
 
 // function to create JWT token
 const createToken = (email: string) => {
-  const JWT_SECRET =
-    process.env.jwt_secret_key ||
-    "cascascac32224#@$#3dewf#@R#@RFEfcc$##RFf33r32424R@#";
+  const JWT_SECRET = "cascascac32224#@$#3dewf#@R#@RFEfcc$##RFf33r32424R@#";
   const payload = { email };
   return jwt.sign(payload, JWT_SECRET, { expiresIn: "15m" });
 };
@@ -216,6 +214,7 @@ app.post("/forgot-password", async (c) => {
       {
         message: "password reset token generated successfully",
         success: true,
+        token,
       },
       200
     );
@@ -229,9 +228,7 @@ app.post("/forgot-password", async (c) => {
 });
 
 const verifyToken = (token: string) => {
-  const JWT_SECRET =
-    process.env.jwt_secret_key ||
-    "cascascac32224#@$#3dewf#@R#@RFEfcc$##RFf33r32424R@#";
+  const JWT_SECRET = "cascascac32224#@$#3dewf#@R#@RFEfcc$##RFf33r32424R@#";
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     return decoded;
