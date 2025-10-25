@@ -199,14 +199,16 @@ app.post("/forgot-password", async (c) => {
       name: "Reset password token",
     };
     const recipients = [email];
-    transport.sendMail({
-      from: sender,
-      to: recipients,
-      subject: "Reset password token",
-      text: "click the link to reset your password",
-      category: "Integration Test",
-      html: `<p>Click <a href="https://frontend-ecommerce-project.vercel.app/user/resetPassword?token=${token}">here</a> to reset your password</p>`,
-    });
+    transport
+      .sendMail({
+        from: sender,
+        to: recipients,
+        subject: "Reset password token",
+        text: "click the link to reset your password",
+        category: "Integration Test",
+        html: `<p>Click <a href="https://frontend-ecommerce-project.vercel.app/user/resetPassword?token=${token}">here</a> to reset your password</p>`,
+      })
+      .then(console.log, console.error);
 
     // Here you would typically generate a password reset token and send it via email.
     // Send email with token (implementation not shown)
@@ -214,8 +216,6 @@ app.post("/forgot-password", async (c) => {
       {
         message: "password reset token generated successfully",
         success: true,
-        token,
-        redirect_url: `/user/resetPassword?token=${token}`,
       },
       200
     );
@@ -225,6 +225,56 @@ app.post("/forgot-password", async (c) => {
       message: "server error user can't reset password ",
       success: false,
     });
+  }
+});
+
+const verifyToken = (token: string) => {
+  const JWT_SECRET =
+    process.env.jwt_secret_key ||
+    "cascascac32224#@$#3dewf#@R#@RFEfcc$##RFf33r32424R@#";
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    return decoded;
+  } catch (error) {
+    return null;
+  }
+};
+
+// reset password route
+
+app.post("/reset-password", async (c) => {
+  try {
+    const { email, newPassword, token } = await c.req.json();
+    // Here you would typically verify the token (implementation not shown)
+    const decoded = verifyToken(token);
+    if (!decoded || (decoded as any).email !== email) {
+      return c.json(
+        { message: "invalid or expired token", success: false },
+        400
+      );
+    }
+    console.log(decoded);
+
+    const hash = bcrypt.hashSync(newPassword, saltRounds);
+
+    const updatedUser = await prisma.users.update({
+      where: { email },
+      data: { password: hash },
+    });
+
+    return c.json(
+      {
+        message: "password reset successfully",
+        success: true,
+      },
+      200
+    );
+  } catch (error) {
+    console.log(error + " error resetting password");
+    return c.json(
+      { message: "server error password can't be reset ", success: false },
+      501
+    );
   }
 });
 
