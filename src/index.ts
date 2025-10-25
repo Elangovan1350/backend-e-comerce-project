@@ -9,7 +9,7 @@ import { MailtrapTransport } from "mailtrap";
 const prisma = new PrismaClient();
 const app = new Hono();
 
-const TOKEN = "cb9597f70ea8abaaf0808116e788f044";
+const TOKEN = "fc65c72fe484e2a014e73f4c09169ba0";
 
 const transport = Nodemailer.createTransport(
   MailtrapTransport({
@@ -193,7 +193,8 @@ app.post("/forgot-password", async (c) => {
     const token = createToken(email);
 
     const sender = {
-      address: "hello@demomailtrap.co",
+      address: "hello@elangovan1350.com",
+
       name: "Reset password token",
     };
     const recipients = [email];
