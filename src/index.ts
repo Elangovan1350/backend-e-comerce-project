@@ -9,13 +9,13 @@ import { MailtrapTransport } from "mailtrap";
 const prisma = new PrismaClient();
 const app = new Hono();
 
-const TOKEN = "fc65c72fe484e2a014e73f4c09169ba0";
-
-const transport = Nodemailer.createTransport(
-  MailtrapTransport({
-    token: TOKEN,
-  })
-);
+const transport = Nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "elangovan2019miss@gmail.com",
+    pass: "otam eqyt ntiw cprz", // use App Password, not your Gmail password
+  },
+});
 
 // CORS configuration
 app.use(
@@ -192,19 +192,19 @@ app.post("/forgot-password", async (c) => {
     }
     const token = createToken(email);
 
-    const sender = {
-      address: "hello@elangovan1350.com",
+    // const sender = {
+    //   address: "elangovan2019miss@gmail.com",
 
-      name: "Reset password token",
-    };
-    const recipients = [email];
+    //   name: "Reset password token",
+    // };
+    // const recipients = [email];
+    //
     transport
       .sendMail({
-        from: sender,
-        to: recipients,
+        from: "elangovan2019miss@gmail.com",
+        to: [email],
         subject: "Reset password token",
         text: "click the link to reset your password",
-        category: "Integration Test",
         html: `<p>Click <a href="https://frontend-ecommerce-project.vercel.app/user/resetPassword?token=${token}">here</a> to reset your password</p>`,
       })
       .then(console.log, console.error);
