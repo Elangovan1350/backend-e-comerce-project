@@ -3,8 +3,19 @@ import { cors } from "hono/cors";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import Nodemailer from "nodemailer";
+import { MailtrapTransport } from "mailtrap";
+
 const prisma = new PrismaClient();
 const app = new Hono();
+
+const TOKEN = "cb9597f70ea8abaaf0808116e788f044";
+
+const transport = Nodemailer.createTransport(
+  MailtrapTransport({
+    token: TOKEN,
+  })
+);
 
 // CORS configuration
 app.use(
@@ -181,9 +192,23 @@ app.post("/forgot-password", async (c) => {
         200
       );
     }
+    const token = createToken(email);
+
+    const sender = {
+      address: "hello@demomailtrap.co",
+      name: "Reset password token",
+    };
+    const recipients = [email];
+    transport.sendMail({
+      from: sender,
+      to: recipients,
+      subject: "Reset password token",
+      text: "click the link to reset your password",
+      category: "Integration Test",
+      html: `<p>Click <a href="https://frontend-ecommerce-project.vercel.app/user/resetPassword?token=${token}">here</a> to reset your password</p>`,
+    });
 
     // Here you would typically generate a password reset token and send it via email.
-    const token = createToken(email);
     // Send email with token (implementation not shown)
     return c.json(
       {
