@@ -4,7 +4,6 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Nodemailer from "nodemailer";
-import { MailtrapTransport } from "mailtrap";
 
 const prisma = new PrismaClient();
 const app = new Hono();
@@ -13,7 +12,7 @@ const transport = Nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: "elangovan2019miss@gmail.com",
-    pass: "otam eqyt ntiw cprz",
+    pass: `${process.env.email_api_key}`,
   },
 });
 
@@ -172,7 +171,7 @@ app.post("/change-password", async (c) => {
 
 // function to create JWT token
 const createToken = (email: string) => {
-  const JWT_SECRET = "cascascac32224#@$#3dewf#@R#@RFEfcc$##RFf33r32424R@#";
+  const JWT_SECRET = `${process.env.jwt_secret_key}`;
   const payload = { email };
   return jwt.sign(payload, JWT_SECRET, { expiresIn: "15m" });
 };
@@ -230,7 +229,7 @@ app.post("/forgot-password", async (c) => {
 });
 
 const verifyToken = (token: string) => {
-  const JWT_SECRET = "cascascac32224#@$#3dewf#@R#@RFEfcc$##RFf33r32424R@#";
+  const JWT_SECRET = `${process.env.jwt_secret_key}`;
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     return decoded;
