@@ -1,7 +1,8 @@
 # deps
+.env
+
 node_modules/
 
 /src/generated/prisma
 # dotenv environment variables file
-.env
 
