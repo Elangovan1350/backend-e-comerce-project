@@ -199,12 +199,13 @@ app.post("/forgot-password", async (c) => {
     // };
     // const recipients = [email];
     //
-    transport
+    await transport
       .sendMail({
         from: "elangovan2019miss@gmail.com",
         to: [email],
         subject: "Reset password token",
         text: "click the link to reset your password",
+
         html: `<p>Click <a href="https://frontend-ecommerce-project.vercel.app/user/resetPassword?token=${token}">here</a> to reset your password</p>`,
       })
       .then(console.log, console.error);
