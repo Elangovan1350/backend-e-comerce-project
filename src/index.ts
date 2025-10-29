@@ -95,10 +95,10 @@ app.get("/", async (c) => {
 app.use(
   "/register",
   zValidator("json", userSchema, (result, c) => {
-    if (!result.success) {
+    if (!result.success && "error" in result) {
       const zodError = result.error as ZodError;
       const messages = zodError.issues.map((e) => e.message);
-      return c.json({ success: false, message: messages }, 400);
+      return c.json({ success: false, message: messages }, 200);
     }
     return;
   })
@@ -149,14 +149,12 @@ app.post("/register", zValidator("json", userSchema), async (c) => {
 app.use(
   "/login",
   zValidator("json", loginSchema, (result, c) => {
-    if (!result.success) {
-      if (!result.success) {
-        const zodError = result.error as ZodError;
-        const messages = zodError.issues.map((e) => e.message);
-        return c.json({ success: false, message: messages }, 400);
-      }
-      return;
+    if (!result.success && "error" in result) {
+      const zodError = result.error as ZodError;
+      const messages = zodError.issues.map((e) => e.message);
+      return c.json({ success: false, message: messages }, 200);
     }
+    return;
   })
 );
 // login route
@@ -203,10 +201,10 @@ app.post("/login", async (c) => {
 app.use(
   "/change-password",
   zValidator("json", changePasswordSchema, (result, c) => {
-    if (!result.success) {
+    if (!result.success && "error" in result) {
       const zodError = result.error as ZodError;
       const messages = zodError.issues.map((e) => e.message);
-      return c.json({ success: false, message: messages }, 400);
+      return c.json({ success: false, message: messages }, 200);
     }
     return;
   })
@@ -271,10 +269,10 @@ const createToken = (email: string) => {
 app.use(
   "/forgot-password",
   zValidator("json", forgotPasswordSchema, (result, c) => {
-    if (!result.success) {
+    if (!result.success && "error" in result) {
       const zodError = result.error as ZodError;
       const messages = zodError.issues.map((e) => e.message);
-      return c.json({ success: false, message: messages }, 400);
+      return c.json({ success: false, message: messages }, 200);
     }
     return;
   })
@@ -360,10 +358,10 @@ const verifyToken = (token: string) => {
 app.use(
   "/reset-password",
   zValidator("json", resetPasswordSchema, (result, c) => {
-    if (!result.success) {
+    if (!result.success && "error" in result) {
       const zodError = result.error as ZodError;
       const messages = zodError.issues.map((e) => e.message);
-      return c.json({ success: false, message: messages }, 400);
+      return c.json({ success: false, message: messages }, 200);
     }
     return;
   })
