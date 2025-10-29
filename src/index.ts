@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Nodemailer from "nodemailer";
 import * as z from "zod";
+import { ZodError } from "zod";
 import { zValidator } from "@hono/zod-validator";
 
 const prisma = new PrismaClient();
@@ -95,17 +96,11 @@ app.use(
   "/register",
   zValidator("json", userSchema, (result, c) => {
     if (!result.success) {
-      const errors = JSON.parse(result.error.message);
-      return c.json(
-        {
-          message: errors.map((err: any) => err.message),
-          success: false,
-        },
-        400
-      );
-    } else {
-      return;
+      const zodError = result.error as ZodError;
+      const messages = zodError.issues.map((e) => e.message);
+      return c.json({ success: false, message: messages }, 400);
     }
+    return;
   })
 );
 
@@ -155,18 +150,11 @@ app.use(
   "/login",
   zValidator("json", loginSchema, (result, c) => {
     if (!result.success) {
-      const errors = JSON.parse(result.error.message);
-      console.log(errors);
-
-      return c.json(
-        {
-          message: "Invalid input",
-          errors: errors.map((err: any) => err.message),
-          success: false,
-        },
-        400
-      );
-    } else {
+      if (!result.success) {
+        const zodError = result.error as ZodError;
+        const messages = zodError.issues.map((e) => e.message);
+        return c.json({ success: false, message: messages }, 400);
+      }
       return;
     }
   })
@@ -216,18 +204,11 @@ app.use(
   "/change-password",
   zValidator("json", changePasswordSchema, (result, c) => {
     if (!result.success) {
-      const errors = JSON.parse(result.error.message);
-      return c.json(
-        {
-          message: "Invalid input",
-          errors: errors.map((err: any) => err.message),
-          success: false,
-        },
-        400
-      );
-    } else {
-      return;
+      const zodError = result.error as ZodError;
+      const messages = zodError.issues.map((e) => e.message);
+      return c.json({ success: false, message: messages }, 400);
     }
+    return;
   })
 );
 // change password route
@@ -291,14 +272,11 @@ app.use(
   "/forgot-password",
   zValidator("json", forgotPasswordSchema, (result, c) => {
     if (!result.success) {
-      const errors: Array<object> = JSON.parse(result.error.message);
-      return c.json(
-        { message: errors.map((e: any) => e.message), success: false },
-        200
-      );
-    } else {
-      return;
+      const zodError = result.error as ZodError;
+      const messages = zodError.issues.map((e) => e.message);
+      return c.json({ success: false, message: messages }, 400);
     }
+    return;
   })
 );
 
@@ -383,18 +361,11 @@ app.use(
   "/reset-password",
   zValidator("json", resetPasswordSchema, (result, c) => {
     if (!result.success) {
-      const errors = JSON.parse(result.error.message);
-      return c.json(
-        {
-          message: "Invalid input",
-          errors: errors.map((err: any) => err.message),
-          success: false,
-        },
-        400
-      );
-    } else {
-      return;
+      const zodError = result.error as ZodError;
+      const messages = zodError.issues.map((e) => e.message);
+      return c.json({ success: false, message: messages }, 400);
     }
+    return;
   })
 );
 // reset password route
