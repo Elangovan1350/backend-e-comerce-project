@@ -98,12 +98,13 @@ app.use(
       const errors = JSON.parse(result.error.message);
       return c.json(
         {
-          message: "Invalid input",
-          errors: errors.map((err: any) => err.message),
+          message: errors.map((err: any) => err.message),
           success: false,
         },
         400
       );
+    } else {
+      return;
     }
   })
 );
@@ -165,6 +166,8 @@ app.use(
         },
         400
       );
+    } else {
+      return;
     }
   })
 );
@@ -222,6 +225,8 @@ app.use(
         },
         400
       );
+    } else {
+      return;
     }
   })
 );
@@ -291,6 +296,8 @@ app.use(
         { message: errors.map((e: any) => e.message), success: false },
         200
       );
+    } else {
+      return;
     }
   })
 );
@@ -385,6 +392,8 @@ app.use(
         },
         400
       );
+    } else {
+      return;
     }
   })
 );
