@@ -20,50 +20,50 @@ const transport = Nodemailer.createTransport({
 });
 
 const userSchema = z.object({
-  email: z.email("Invalid email address"),
+  email: z.email(" Invalid email address"),
   name: z
     .string()
-    .min(2, "Name must be at least 2 characters long")
-    .max(100, "Name must be at most 100 characters long"),
+    .min(2, " Name must be at least 2 characters long")
+    .max(100, " Name must be at most 100 characters long"),
   password: z
     .string()
-    .min(6, "Password must be at least 6 characters long")
-    .max(30, "Password must be at most 30 characters long"),
+    .min(6, " Password must be at least 6 characters long")
+    .max(30, " Password must be at most 30 characters long"),
   phone: z
     .string()
-    .min(10, "Phone number must be at least 10 characters long")
-    .max(15, "Phone number must be at most 15 characters long"),
+    .min(10, " Phone number must be at least 10 characters long")
+    .max(15, " Phone number must be at most 15 characters long"),
 });
 const loginSchema = z.object({
-  email: z.email("Invalid email address"),
+  email: z.email(" Invalid email address"),
   password: z
     .string()
-    .min(6, "Password must be at least 6 characters long")
-    .max(100, "Password must be at most 100 characters long"),
+    .min(6, " Password must be at least 6 characters long")
+    .max(100, " Password must be at most 100 characters long"),
 });
 
 const resetPasswordSchema = z.object({
-  email: z.email("Invalid email address"),
+  email: z.email(" Invalid email address"),
   newPassword: z
     .string()
-    .min(6, "Password must be at least 6 characters long")
-    .max(30, "Password must be at most 30 characters long"),
-  token: z.string().min(1, "Token is required"),
+    .min(6, " Password must be at least 6 characters long")
+    .max(30, " Password must be at most 30 characters long"),
+  token: z.string().min(1, " Token is required"),
 });
 const changePasswordSchema = z.object({
-  email: z.email("Invalid email address"),
+  email: z.email(" Invalid email address"),
   newPassword: z
     .string()
-    .min(6, "Password must be at least 6 characters long")
-    .max(30, "Password must be at most 30 characters long"),
+    .min(6, " Password must be at least 6 characters long")
+    .max(30, " Password must be at most 30 characters long"),
   password: z
     .string()
-    .min(6, "Current Password must be at least 6 characters long")
-    .max(30, "Current Password must be at most 30 characters long"),
+    .min(6, " Current Password must be at least 6 characters long")
+    .max(30, " Current Password must be at most 30 characters long"),
 });
 
 const forgotPasswordSchema = z.object({
-  email: z.email("Invalid email address"),
+  email: z.email(" Invalid email address"),
 });
 
 // Middleware to validate request body for registration and login routes
