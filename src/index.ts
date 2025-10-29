@@ -5,8 +5,9 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Nodemailer from "nodemailer";
 import * as z from "zod";
-import { ZodError } from "zod";
+// import { ZodError } from "zod";
 import { zValidator } from "@hono/zod-validator";
+import { ZodError } from "zod";
 
 const prisma = new PrismaClient();
 const app = new Hono();
@@ -96,8 +97,7 @@ app.use(
   "/register",
   zValidator("json", userSchema, (result, c) => {
     if (!result.success && "error" in result) {
-      const zodError = result.error as ZodError;
-      const messages = zodError.issues.map((e) => e.message);
+      const messages = result.error.issues.map((e) => e.message);
       return c.json({ success: false, message: messages }, 200);
     }
     return;
@@ -150,8 +150,8 @@ app.use(
   "/login",
   zValidator("json", loginSchema, (result, c) => {
     if (!result.success && "error" in result) {
-      const zodError = result.error as ZodError;
-      const messages = zodError.issues.map((e) => e.message);
+      // const zodError = result.error as ZodError;
+      const messages = result.error.issues.map((e) => e.message);
       return c.json({ success: false, message: messages }, 200);
     }
     return;
@@ -202,8 +202,8 @@ app.use(
   "/change-password",
   zValidator("json", changePasswordSchema, (result, c) => {
     if (!result.success && "error" in result) {
-      const zodError = result.error as ZodError;
-      const messages = zodError.issues.map((e) => e.message);
+      // const zodError = result.error as ZodError;
+      const messages = result.error.issues.map((e) => e.message);
       return c.json({ success: false, message: messages }, 200);
     }
     return;
@@ -270,8 +270,8 @@ app.use(
   "/forgot-password",
   zValidator("json", forgotPasswordSchema, (result, c) => {
     if (!result.success && "error" in result) {
-      const zodError = result.error as ZodError;
-      const messages = zodError.issues.map((e) => e.message);
+      // const zodError = result.error as ZodError;
+      const messages = result.error.issues.map((e) => e.message);
       return c.json({ success: false, message: messages }, 200);
     }
     return;
@@ -359,8 +359,8 @@ app.use(
   "/reset-password",
   zValidator("json", resetPasswordSchema, (result, c) => {
     if (!result.success && "error" in result) {
-      const zodError = result.error as ZodError;
-      const messages = zodError.issues.map((e) => e.message);
+      // const zodError = result.error as ZodError;
+      const messages = result.error.issues.map((e) => e.message);
       return c.json({ success: false, message: messages }, 200);
     }
     return;
