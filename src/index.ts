@@ -4,6 +4,8 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Nodemailer from "nodemailer";
+import * as z from "zod";
+import { zValidator } from "@hono/zod-validator";
 
 const prisma = new PrismaClient();
 const app = new Hono();
@@ -15,6 +17,55 @@ const transport = Nodemailer.createTransport({
     pass: `${process.env.email_api_key}`,
   },
 });
+
+const userSchema = z.object({
+  email: z.email("Invalid email address"),
+  name: z
+    .string()
+    .min(2, "Name must be at least 2 characters long")
+    .max(100, "Name must be at most 100 characters long"),
+  password: z
+    .string()
+    .min(6, "Password must be at least 6 characters long")
+    .max(30, "Password must be at most 30 characters long"),
+  phone: z
+    .string()
+    .min(10, "Phone number must be at least 10 characters long")
+    .max(15, "Phone number must be at most 15 characters long"),
+});
+const loginSchema = z.object({
+  email: z.email("Invalid email address"),
+  password: z
+    .string()
+    .min(6, "Password must be at least 6 characters long")
+    .max(100, "Password must be at most 100 characters long"),
+});
+
+const resetPasswordSchema = z.object({
+  email: z.email("Invalid email address"),
+  newPassword: z
+    .string()
+    .min(6, "Password must be at least 6 characters long")
+    .max(30, "Password must be at most 30 characters long"),
+  token: z.string().min(1, "Token is required"),
+});
+const changePasswordSchema = z.object({
+  email: z.email("Invalid email address"),
+  newPassword: z
+    .string()
+    .min(6, "Password must be at least 6 characters long")
+    .max(30, "Password must be at most 30 characters long"),
+  password: z
+    .string()
+    .min(6, "Current Password must be at least 6 characters long")
+    .max(30, "Current Password must be at most 30 characters long"),
+});
+
+const forgotPasswordSchema = z.object({
+  email: z.email("Invalid email address"),
+});
+
+// Middleware to validate request body for registration and login routes
 
 // CORS configuration
 app.use(
@@ -39,9 +90,27 @@ app.get("/", async (c) => {
   );
 });
 
+// Middleware to handle validation errors for registration route
+app.use(
+  "/register",
+  zValidator("json", userSchema, (result, c) => {
+    if (!result.success) {
+      const errors = JSON.parse(result.error.message);
+      return c.json(
+        {
+          message: "Invalid input",
+          errors: errors.map((err: any) => err.message),
+          success: false,
+        },
+        400
+      );
+    }
+  })
+);
+
 // register route
 
-app.post("/register", async (c) => {
+app.post("/register", zValidator("json", userSchema), async (c) => {
   try {
     const { name, email, password, phone } = await c.req.json();
 
@@ -80,6 +149,25 @@ app.post("/register", async (c) => {
   }
 });
 
+// Middleware to handle validation errors for login route
+app.use(
+  "/login",
+  zValidator("json", loginSchema, (result, c) => {
+    if (!result.success) {
+      const errors = JSON.parse(result.error.message);
+      console.log(errors);
+
+      return c.json(
+        {
+          message: "Invalid input",
+          errors: errors.map((err: any) => err.message),
+          success: false,
+        },
+        400
+      );
+    }
+  })
+);
 // login route
 app.post("/login", async (c) => {
   try {
@@ -120,6 +208,23 @@ app.post("/login", async (c) => {
   }
 });
 
+// Middleware to handle validation errors for change password route
+app.use(
+  "/change-password",
+  zValidator("json", changePasswordSchema, (result, c) => {
+    if (!result.success) {
+      const errors = JSON.parse(result.error.message);
+      return c.json(
+        {
+          message: "Invalid input",
+          errors: errors.map((err: any) => err.message),
+          success: false,
+        },
+        400
+      );
+    }
+  })
+);
 // change password route
 
 app.post("/change-password", async (c) => {
@@ -176,6 +281,20 @@ const createToken = (email: string) => {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: "15m" });
 };
 
+// Middleware to handle validation errors for forgot password route
+app.use(
+  "/forgot-password",
+  zValidator("json", forgotPasswordSchema, (result, c) => {
+    if (!result.success) {
+      const errors: Array<object> = JSON.parse(result.error.message);
+      return c.json(
+        { message: errors.map((e: any) => e.message), success: false },
+        200
+      );
+    }
+  })
+);
+
 // forgot password route
 app.post("/forgot-password", async (c) => {
   try {
@@ -207,10 +326,21 @@ app.post("/forgot-password", async (c) => {
 
         html: `<p>Click <a href="https://frontend-ecommerce-project.vercel.app/user/resetPassword?token=${token}">here</a> to reset your password</p>`,
       })
-      .then(console.log, console.error);
+      .then((e) => {
+        if (e.accepted.length > 0) {
+          console.log("Email sent successfully to: ", e.accepted);
+        } else {
+          console.log("Email sending failed: ", e.rejected);
+          return c.json(
+            {
+              message: "failed to send email press forget password again",
+              success: false,
+            },
+            200
+          );
+        }
+      });
 
-    // Here you would typically generate a password reset token and send it via email.
-    // Send email with token (implementation not shown)
     return c.json(
       {
         message: "password reset token generated successfully",
@@ -219,6 +349,9 @@ app.post("/forgot-password", async (c) => {
       },
       200
     );
+
+    // Here you would typically generate a password reset token and send it via email.
+    // Send email with token (implementation not shown)
   } catch (error) {
     console.log(error);
     return c.json({
@@ -238,6 +371,23 @@ const verifyToken = (token: string) => {
   }
 };
 
+// Middleware to handle validation errors for reset password route
+app.use(
+  "/reset-password",
+  zValidator("json", resetPasswordSchema, (result, c) => {
+    if (!result.success) {
+      const errors = JSON.parse(result.error.message);
+      return c.json(
+        {
+          message: "Invalid input",
+          errors: errors.map((err: any) => err.message),
+          success: false,
+        },
+        400
+      );
+    }
+  })
+);
 // reset password route
 
 app.post("/reset-password", async (c) => {
@@ -245,7 +395,13 @@ app.post("/reset-password", async (c) => {
     const { email, newPassword, token } = await c.req.json();
     // Here you would typically verify the token (implementation not shown)
     const decoded = verifyToken(token);
-    if (!decoded || (decoded as any).email !== email) {
+    if ((decoded as any).email !== email) {
+      return c.json(
+        { message: "invalid token email mismatch", success: false },
+        400
+      );
+    }
+    if (!decoded) {
       return c.json(
         { message: "invalid or expired token", success: false },
         400
