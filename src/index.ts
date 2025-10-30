@@ -323,7 +323,6 @@ app.post("/forgot-password", async (c) => {
       {
         message: "password reset token generated successfully",
         success: true,
-        token,
       },
       200
     );
@@ -400,6 +399,95 @@ app.post("/reset-password", async (c) => {
     return c.json(
       { message: "server error password can't be reset ", success: false },
       501
+    );
+  }
+});
+
+app.post("/email-verify", async (c) => {
+  try {
+    const { email } = await c.req.json();
+    const user = await prisma.users.findUnique({
+      where: { email },
+    });
+    if (!user) {
+      return c.json(
+        { message: " email is not registered ", success: false },
+        200
+      );
+    }
+    const token = createToken(email);
+
+    await transport
+      .sendMail({
+        from: "elangovan2019miss@gmail.com",
+        to: [email],
+        subject: "Email Verification",
+        text: "click the link to verify your email",
+
+        html: `<p>Click <a href="https://frontend-ecommerce-project.vercel.app/user/verifyEmail?token=${token}">here</a> to verify your email</p>`,
+      })
+      .then((e) => {
+        if (e.accepted.length > 0) {
+          console.log("Email sent successfully to: ", e.accepted);
+        } else {
+          console.log("Email sending failed: ", e.rejected);
+          return c.json(
+            {
+              message: "failed to send email press verify again",
+              success: false,
+            },
+            200
+          );
+        }
+      });
+
+    return c.json(
+      {
+        message: "email verification token generated and sent successfully",
+        success: true,
+      },
+      200
+    );
+  } catch (error) {
+    console.log(error);
+    return c.json({
+      message: "server error user can't verify email try again later  ",
+      success: false,
+    });
+  }
+});
+
+app.post("/email-verify-confirm", async (c) => {
+  try {
+    const { token } = await c.req.json();
+
+    const decoded = verifyToken(token);
+    if (!decoded) {
+      return c.json(
+        { message: "invalid or expired token try again ", success: false },
+        200
+      );
+    }
+    const email = (decoded as any).email;
+
+    const updatedUser = await prisma.users.update({
+      where: { email },
+      data: { emailVerified: true },
+      select: { emailVerified: true, email: true, name: true },
+    });
+
+    return c.json(
+      {
+        message: "email verified successfully",
+        success: true,
+      },
+      200
+    );
+  } catch (error) {
+    console.log(error + " error verifying email");
+    return c.json(
+      { message: "server error email can't be verified ", success: false },
+      200
     );
   }
 });

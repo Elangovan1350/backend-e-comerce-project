@@ -19,6 +19,41 @@ model Users {
   email String @unique
   phone String
   password String
+  emailVerified Boolean @default(false)
   createdAt DateTime @default(now())
   updateAt DateTime @updatedAt
 }
+
+
+
+
+
+// model Student {
+//   roll_no String @id @default(uuid())
+//   name    String
+//   email   String @unique
+//   proof   Proof?
+//   transaction Transaction[]
+//   @@unique([email, roll_no])
+// }
+
+// model Proof {
+//   proof_id        String    @unique @default(uuid())
+//   proof_type      ProofType
+//   student_roll_no String    @unique
+//   student         Student   @relation(fields: [student_roll_no], references: [roll_no])
+// }
+
+// enum ProofType {
+//   addhar
+//   card
+// }
+
+// model Transaction {
+//   transaction_id String @id @default(uuid())
+//   transaction_url String 
+//   payment_id String @unique
+//   email String 
+//   student_roll_no String
+//   student Student @relation(fields:[email,student_roll_no],references:[email,roll_no])
+// }
