@@ -1,12 +1,9 @@
 import { zValidator } from "@hono/zod-validator";
-import { prisma } from "../index.js";
+import { prisma, userRoutes } from "../index.js";
 import * as z from "zod";
 import bcrypt from "bcryptjs";
-import { Hono } from "hono";
 
 const saltRounds = 10;
-
-export const registerRoutes = new Hono();
 
 // Zod schemas for validation
 const userSchema = z.object({
@@ -25,8 +22,8 @@ const userSchema = z.object({
     .max(15, " Phone number must be at most 15 characters long"),
 });
 // Middleware to handle validation errors for registration route
-registerRoutes.use(
-  "/",
+userRoutes.use(
+  "/register",
   zValidator("json", userSchema, (result, c) => {
     if (!result.success && "error" in result) {
       const messages = result.error.issues.map((e) => e.message);
@@ -38,7 +35,7 @@ registerRoutes.use(
 
 // register route
 
-registerRoutes.post("/", zValidator("json", userSchema), async (c) => {
+userRoutes.post("/register", zValidator("json", userSchema), async (c) => {
   try {
     const { name, email, password, phone } = await c.req.json();
 

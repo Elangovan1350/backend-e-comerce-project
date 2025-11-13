@@ -1,10 +1,7 @@
-import { prisma } from "../index.js";
+import { prisma, userRoutes } from "../index.js";
 import Nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import { Hono } from "hono";
-
-export const emailVerifyRoutes = new Hono();
-export const emailVerifyConfirmRoutes = new Hono();
 
 const transport = Nodemailer.createTransport({
   service: "gmail",
@@ -33,7 +30,7 @@ const verifyToken = (token: string) => {
 };
 
 // email verify route
-emailVerifyRoutes.post("/", async (c) => {
+userRoutes.post("/email-verify", async (c) => {
   try {
     const { email } = await c.req.json();
     const user = await prisma.users.findUnique({
@@ -88,7 +85,7 @@ emailVerifyRoutes.post("/", async (c) => {
 });
 
 // email verify confirm route
-emailVerifyConfirmRoutes.post("/", async (c) => {
+userRoutes.post("/email-verify-confirm", async (c) => {
   try {
     const { token } = await c.req.json();
 
