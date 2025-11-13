@@ -16,8 +16,8 @@ app.use(
     credentials: true,
   })
 );
-export const userRoutes = app;
-export const postRoutes = app;
+export const userRoutes = new Hono();
+export const postRoutes = new Hono();
 
 // Importing user routes
 app.route("/", userRoutes);
