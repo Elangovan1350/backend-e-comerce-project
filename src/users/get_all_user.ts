@@ -1,9 +1,7 @@
-import { Hono } from "hono";
-import { prisma } from "../index.js";
-export const getAllUserRoutes = new Hono();
+import { prisma, userRoutes } from "../index.js";
 
 // get all users route
-getAllUserRoutes.get("/", async (c) => {
+userRoutes.get("/", async (c) => {
   const users = await prisma.users.findMany({
     include: { posts: true },
   });
