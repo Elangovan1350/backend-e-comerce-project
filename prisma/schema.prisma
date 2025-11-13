@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,19 +8,27 @@ datasource db {
 }
 
 model Users {
-  id String @id @default(cuid())
-  name String
-  email String @unique
-  phone String
-  password String
-  emailVerified Boolean @default(false)
-  createdAt DateTime @default(now())
-  updateAt DateTime @updatedAt
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  phone         String
+  password      String
+  posts         Posts[]
+  emailVerified Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updateAt      DateTime @updatedAt
 }
 
-
-
-
+model Posts {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  authorId  String
+  isPosted  Boolean  @default(false)
+  author    Users    @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
 // model Student {
 //   roll_no String @id @default(uuid())
