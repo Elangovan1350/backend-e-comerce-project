@@ -1,8 +1,10 @@
 import { zValidator } from "@hono/zod-validator";
-import { prisma, userRoutes } from "../index.js";
+import { prisma } from "../index.js";
 import * as z from "zod";
 import bcrypt from "bcryptjs";
 import { Hono } from "hono";
+
+export const userRoutes5 = new Hono();
 
 const saltRounds = 10;
 
@@ -20,7 +22,7 @@ const changePasswordSchema = z.object({
 });
 
 // Middleware to handle validation errors for change password route
-userRoutes.use(
+userRoutes5.use(
   "/change-password",
   zValidator("json", changePasswordSchema, (result, c) => {
     if (!result.success && "error" in result) {
@@ -32,7 +34,7 @@ userRoutes.use(
 );
 // change password route
 
-userRoutes.post("/change-password", async (c) => {
+userRoutes5.post("/change-password", async (c) => {
   try {
     const { email, newPassword, password } = await c.req.json();
     const passwordCheck = await prisma.users.findUnique({

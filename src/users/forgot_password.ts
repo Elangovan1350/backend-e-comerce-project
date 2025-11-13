@@ -1,4 +1,4 @@
-import { prisma, userRoutes } from "../index.js";
+import { prisma } from "../index.js";
 
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -6,6 +6,7 @@ import Nodemailer from "nodemailer";
 import * as z from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
+export const userRoutes3 = new Hono();
 
 const transport = Nodemailer.createTransport({
   service: "gmail",
@@ -42,7 +43,7 @@ const createToken = (email: string) => {
 };
 
 // Middleware to handle validation errors for forgot password route
-userRoutes.use(
+userRoutes3.use(
   "/forgot-password",
   zValidator("json", forgotPasswordSchema, (result, c) => {
     if (!result.success && "error" in result) {
@@ -54,7 +55,7 @@ userRoutes.use(
 );
 
 // forgot password route
-userRoutes.post("/forgot-password", async (c) => {
+userRoutes3.post("/forgot-password", async (c) => {
   try {
     const { email } = await c.req.json();
     const user = await prisma.users.findUnique({
@@ -129,7 +130,7 @@ const verifyToken = (token: string) => {
 };
 
 // Middleware to handle validation errors for reset password route
-userRoutes.use(
+userRoutes3.use(
   "/reset-password",
   zValidator("json", resetPasswordSchema, (result, c) => {
     if (!result.success && "error" in result) {
@@ -141,7 +142,7 @@ userRoutes.use(
 );
 // reset password route
 
-userRoutes.post("/reset-password", async (c) => {
+userRoutes3.post("/reset-password", async (c) => {
   try {
     const { email, newPassword, token } = await c.req.json();
     // Here you would typically verify the token (implementation not shown)

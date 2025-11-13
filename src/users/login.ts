@@ -1,8 +1,10 @@
 import { zValidator } from "@hono/zod-validator";
-import { prisma, userRoutes } from "../index.js";
+import { prisma } from "../index.js";
 import * as z from "zod";
 import bcrypt from "bcryptjs";
 import { Hono } from "hono";
+
+export const userRoutes2 = new Hono();
 
 // Zod schema for login validation
 
@@ -15,7 +17,7 @@ const loginSchema = z.object({
 });
 
 // Middleware to handle validation errors for login route
-userRoutes.use(
+userRoutes2.use(
   "/login",
   zValidator("json", loginSchema, (result, c) => {
     if (!result.success && "error" in result) {
@@ -26,7 +28,7 @@ userRoutes.use(
   })
 );
 // login route
-userRoutes.post("/login", async (c) => {
+userRoutes2.post("/login", async (c) => {
   try {
     const { email, password } = await c.req.json();
     const passwordCheck = await prisma.users.findUnique({

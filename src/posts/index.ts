@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-
-import { postRoutes, prisma } from "../index.js";
+import { prisma } from "../index.js";
+export const postRoutes = new Hono();
 
 // get all posts route
 postRoutes.get("/", async (c) => {

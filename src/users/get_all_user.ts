@@ -1,4 +1,7 @@
-import { prisma, userRoutes } from "../index.js";
+import { Hono } from "hono";
+import { prisma } from "../index.js";
+
+export const userRoutes = new Hono();
 
 // get all users route
 userRoutes.get("/", async (c) => {
