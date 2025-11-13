@@ -8,6 +8,7 @@ import { resetPasswordRoutes } from "./users/forgot_password.js";
 import { changePasswordRoutes } from "./users/change_password.js";
 import { emailVerifyRoutes } from "./users/email_verify.js";
 import { emailVerifyConfirmRoutes } from "./users/email_verify.js";
+import { getAllUserRoutes } from "./users/get_all_user.js";
 
 export const prisma = new PrismaClient();
 const app = new Hono();
@@ -33,13 +34,14 @@ app.route("/change-password", changePasswordRoutes);
 
 app.route("/email-verify", emailVerifyRoutes);
 app.route("/email-verify-confirm", emailVerifyConfirmRoutes);
+app.route("/", getAllUserRoutes);
 
 // get all users route
-app.get("/", async (c) => {
-  const users = await prisma.users.findMany();
-  return c.json(
-    { data: users, message: "all users fetched successfully", success: true },
-    200
-  );
-});
+// app.get("/", async (c) => {
+//   const users = await prisma.users.findMany();
+//   return c.json(
+//     { data: users, message: "all users fetched successfully", success: true },
+//     200
+//   );
+// });
 export default app;
